@@ -1,6 +1,6 @@
 package org.sopt.post.controller;
 
-import org.sopt.post.repository.PostRepository;
+import org.sopt.post.service.PostService;
 import org.sopt.post.view.PostView;
 import org.sopt.post.domain.Post;
 
@@ -8,11 +8,11 @@ import java.util.List;
 
 public class PostController {
     private final PostView view;
-    private final PostRepository repository;
+    private final PostService service;
 
-    public PostController(PostView view, PostRepository repository) {
+    public PostController(PostView view, PostService service) {
         this.view = view;
-        this.repository = repository;
+        this.service = service;
     }
 
     public void run() {
@@ -37,13 +37,12 @@ public class PostController {
     private void createPost() {
         String title = view.readTitle();
         String content = view.readContent();
-        Post post = new Post(title, content);
-        repository.save(post);
+        service.createPost(title, content);
         view.printMessage("게시글이 작성되었습니다.");
     }
 
     private void readPosts() {
-        List<Post> posts = repository.findAll();
+        List<Post> posts = service.getPosts();
 
         if (posts.isEmpty()) {
             view.printMessage("게시글이 없습니다.");
@@ -55,7 +54,7 @@ public class PostController {
     }
 
     private void readPost() {
-        List<Post> posts = repository.findAll();
+        List<Post> posts = service.getPosts();
 
         if (posts.isEmpty()) {
             view.printMessage("게시글이 없습니다.");
@@ -64,7 +63,7 @@ public class PostController {
 
         int index = view.readPostNumber("조회할 게시글 번호: ") - 1;
 
-        Post post = repository.findById(index);
+        Post post = service.getPost(index);
 
         if (post == null) {
             view.printMessage("존재하지 않는 게시글입니다.");
@@ -75,7 +74,7 @@ public class PostController {
     }
 
     private void updatePost() {
-        List<Post> posts = repository.findAll();
+        List<Post> posts = service.getPosts();
 
         if (posts.isEmpty()) {
             view.printMessage("게시글이 없습니다.");
@@ -84,24 +83,19 @@ public class PostController {
 
         int index = view.readPostNumber("수정할 게시글 번호: ") - 1;
 
-        Post post = repository.findById(index);
-
-        if (post == null) {
-            view.printMessage("존재하지 않는 게시글입니다.");
-            return;
-        }
-
         String newTitle = view.readTitle();
         String newContent = view.readContent();
 
-        post.updateTitle(newTitle);
-        post.updateContent(newContent);
+        if (!service.updatePost(index, newTitle, newContent)) {
+            view.printMessage("존재하지 않는 게시글입니다.");
+            return;
+        }
 
         view.printMessage("게시글이 수정되었습니다.");
     }
 
     private void deletePost() {
-        List<Post> posts = repository.findAll();
+        List<Post> posts = service.getPosts();
 
         if (posts.isEmpty()) {
             view.printMessage("게시글이 없습니다.");
@@ -110,7 +104,7 @@ public class PostController {
 
         int index = view.readPostNumber("삭제할 게시글 번호: ") - 1;
 
-        if (!repository.deleteById(index)) {
+        if (!service.deletePost(index)) {
             view.printMessage("존재하지 않는 게시글입니다.");
             return;
         }
