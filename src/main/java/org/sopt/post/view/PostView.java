@@ -1,5 +1,7 @@
 // PostView
-package org.sopt.post;
+package org.sopt.post.view;
+
+import org.sopt.post.domain.Post;
 
 import java.util.Scanner;
 

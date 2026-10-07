@@ -1,15 +1,18 @@
-// PostController
-package org.sopt.post;
+package org.sopt.post.controller;
 
-import java.util.ArrayList;
+import org.sopt.post.repository.PostRepository;
+import org.sopt.post.view.PostView;
+import org.sopt.post.domain.Post;
+
 import java.util.List;
 
 public class PostController {
-    private final List<Post> posts = new ArrayList<>();
     private final PostView view;
+    private final PostRepository repository;
 
-    public PostController(PostView view) {
+    public PostController(PostView view, PostRepository repository) {
         this.view = view;
+        this.repository = repository;
     }
 
     public void run() {
@@ -34,11 +37,14 @@ public class PostController {
     private void createPost() {
         String title = view.readTitle();
         String content = view.readContent();
-        posts.add(new Post(title, content));
+        Post post = new Post(title, content);
+        repository.save(post);
         view.printMessage("게시글이 작성되었습니다.");
     }
 
     private void readPosts() {
+        List<Post> posts = repository.findAll();
+
         if (posts.isEmpty()) {
             view.printMessage("게시글이 없습니다.");
             return;
@@ -49,6 +55,8 @@ public class PostController {
     }
 
     private void readPost() {
+        List<Post> posts = repository.findAll();
+
         if (posts.isEmpty()) {
             view.printMessage("게시글이 없습니다.");
             return;
@@ -56,15 +64,19 @@ public class PostController {
 
         int index = view.readPostNumber("조회할 게시글 번호: ") - 1;
 
-        if (!isValidIndex(index)) {
+        Post post = repository.findById(index);
+
+        if (post == null) {
             view.printMessage("존재하지 않는 게시글입니다.");
             return;
         }
-        Post post = posts.get(index);
+
         view.printPost(post);
     }
 
     private void updatePost() {
+        List<Post> posts = repository.findAll();
+
         if (posts.isEmpty()) {
             view.printMessage("게시글이 없습니다.");
             return;
@@ -72,15 +84,15 @@ public class PostController {
 
         int index = view.readPostNumber("수정할 게시글 번호: ") - 1;
 
-        if (!isValidIndex(index)) {
+        Post post = repository.findById(index);
+
+        if (post == null) {
             view.printMessage("존재하지 않는 게시글입니다.");
             return;
         }
 
         String newTitle = view.readTitle();
         String newContent = view.readContent();
-
-        Post post = posts.get(index);
 
         post.updateTitle(newTitle);
         post.updateContent(newContent);
@@ -89,6 +101,8 @@ public class PostController {
     }
 
     private void deletePost() {
+        List<Post> posts = repository.findAll();
+
         if (posts.isEmpty()) {
             view.printMessage("게시글이 없습니다.");
             return;
@@ -96,17 +110,12 @@ public class PostController {
 
         int index = view.readPostNumber("삭제할 게시글 번호: ") - 1;
 
-        if (!isValidIndex(index)) {
+        if (!repository.deleteById(index)) {
             view.printMessage("존재하지 않는 게시글입니다.");
             return;
         }
 
-        posts.remove(index);
-
         view.printMessage("게시글이 삭제되었습니다.");
     }
 
-    private boolean isValidIndex(int index) {
-        return index >= 0 && index < posts.size();
-    }
 }
