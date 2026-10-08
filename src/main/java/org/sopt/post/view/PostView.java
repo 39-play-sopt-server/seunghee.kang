@@ -4,9 +4,11 @@ package org.sopt.post.view;
 import org.sopt.post.domain.Post;
 import org.sopt.post.domain.PostCategory;
 
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 public class PostView {
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     private final Scanner scanner = new Scanner(System.in);
 
     public void printMenu() {
@@ -62,7 +64,7 @@ public class PostView {
         System.out.println("내용: " + post.getContent());
         System.out.println("카테고리: " + post.getCategory());
         System.out.println("작성자: " + post.getAuthor());
-        System.out.println("작성일: " + post.getCreatedAt());
+        System.out.println("작성일: " + post.getCreatedAt().format(DATE_FORMATTER));
     }
 
     public void printMessage(String message) {
