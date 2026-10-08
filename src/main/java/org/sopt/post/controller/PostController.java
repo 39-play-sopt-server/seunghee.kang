@@ -1,5 +1,6 @@
 package org.sopt.post.controller;
 
+import org.sopt.post.domain.PostCategory;
 import org.sopt.post.service.PostService;
 import org.sopt.post.view.PostView;
 import org.sopt.post.domain.Post;
@@ -37,7 +38,9 @@ public class PostController {
     private void createPost() {
         String title = view.readTitle();
         String content = view.readContent();
-        service.createPost(title, content);
+        PostCategory category = view.readCategory();
+        String author = view.readAuthor();
+        service.createPost(title, content, category, author);
         view.printMessage("게시글이 작성되었습니다.");
     }
 

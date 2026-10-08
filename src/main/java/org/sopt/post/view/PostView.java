@@ -2,6 +2,7 @@
 package org.sopt.post.view;
 
 import org.sopt.post.domain.Post;
+import org.sopt.post.domain.PostCategory;
 
 import java.util.Scanner;
 
@@ -38,10 +39,30 @@ public class PostView {
         return Integer.parseInt(scanner.nextLine());
     }
 
+    public String readAuthor() {
+        System.out.print("작성자: ");
+        return scanner.nextLine();
+    }
+
+    public PostCategory readCategory() {
+        System.out.print("카테고리 (1. 정보, 2. 공지, 3. 자유, 4. 질문): ");
+        int categoryChoice = Integer.parseInt(scanner.nextLine());
+        return switch (categoryChoice) {
+            case 1 -> PostCategory.INFO;
+            case 2 -> PostCategory.NOTICE;
+            case 3 -> PostCategory.FREE;
+            case 4 -> PostCategory.QUESTION;
+            default -> throw new IllegalArgumentException("잘못된 카테고리 선택입니다.");
+        };
+    }
+
     public void printPost(Post post) {
         System.out.println("\n=== 게시글 ===");
         System.out.println("제목: " + post.getTitle());
         System.out.println("내용: " + post.getContent());
+        System.out.println("카테고리: " + post.getCategory());
+        System.out.println("작성자: " + post.getAuthor());
+        System.out.println("작성일: " + post.getCreatedAt());
     }
 
     public void printMessage(String message) {

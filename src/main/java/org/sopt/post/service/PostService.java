@@ -1,6 +1,7 @@
 package org.sopt.post.service;
 
 import org.sopt.post.domain.Post;
+import org.sopt.post.domain.PostCategory;
 import org.sopt.post.repository.PostRepository;
 
 import java.util.List;
@@ -12,8 +13,8 @@ public class PostService {
         this.repository = repository;
     }
 
-    public void createPost(String title, String content) {
-        Post post = new Post(title, content);
+    public void createPost(String title, String content, PostCategory category, String author) {
+        Post post = new Post(title, content, category, author);
         repository.save(post);
     }
 
