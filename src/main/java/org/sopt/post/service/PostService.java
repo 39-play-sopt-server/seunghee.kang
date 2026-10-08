@@ -2,6 +2,7 @@ package org.sopt.post.service;
 
 import org.sopt.post.domain.Post;
 import org.sopt.post.domain.PostCategory;
+import org.sopt.post.exception.PostNotFoundException;
 import org.sopt.post.repository.PostRepository;
 
 import java.util.List;
@@ -23,21 +24,23 @@ public class PostService {
     }
 
     public Post getPost(int index) {
-        return repository.findById(index);
-    }
-
-    public boolean updatePost(int index, String title, String content){
         Post post = repository.findById(index);
-        if (post != null) {
-            post.updateTitle(title);
-            post.updateContent(content);
-            return true;
+        if (post == null) {
+            throw new PostNotFoundException("존재하지 않는 게시글입니다.");
         }
-        return false;
+        return post;
     }
 
-    public boolean deletePost(int index) {
-        return repository.deleteById(index);
+    public void updatePost(int index, String title, String content){
+        Post post = getPost(index);
+        post.updateTitle(title);
+        post.updateContent(content);
+    }
+
+    public void deletePost(int index) {
+        if (!repository.deleteById(index)) {
+            throw new PostNotFoundException("삭제할 게시글이 존재하지 않습니다.");
+        }
     }
 
 }
