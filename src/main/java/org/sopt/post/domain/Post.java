@@ -8,8 +8,8 @@ public class Post {
     private String title;
     private String content;
     private PostCategory category;
-    private String author;
-    private LocalDateTime createdAt;
+    private final String author;
+    private final LocalDateTime createdAt;
 
     public Post(String title, String content, PostCategory category, String author) {
         validateTitle(title);
