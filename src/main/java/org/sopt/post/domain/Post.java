@@ -41,13 +41,10 @@ public class Post {
         return this.createdAt;
     }
 
-    public void updateTitle(String title) {
+    public void update(String title, String content) {
         validateTitle(title);
-        this.title = title;
-    }
-
-    public void updateContent(String content) {
         validateContent(content);
+        this.title = title;
         this.content = content;
     }
 

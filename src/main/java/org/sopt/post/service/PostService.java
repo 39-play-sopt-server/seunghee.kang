@@ -33,8 +33,7 @@ public class PostService {
 
     public void updatePost(int index, String title, String content){
         Post post = getPost(index);
-        post.updateTitle(title);
-        post.updateContent(content);
+        post.update(title, content);
     }
 
     public void deletePost(int index) {
