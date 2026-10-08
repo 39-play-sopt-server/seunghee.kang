@@ -21,7 +21,7 @@ public class PostView {
 
     public int readCommand() {
         System.out.print("선택: ");
-        return Integer.parseInt(scanner.nextLine());
+        return readNumber();
     }
 
     public String readTitle() {
@@ -36,7 +36,7 @@ public class PostView {
 
     public int readPostNumber(String message) {
         System.out.print(message);
-        return Integer.parseInt(scanner.nextLine());
+        return readNumber();
     }
 
     public String readAuthor() {
@@ -46,7 +46,7 @@ public class PostView {
 
     public PostCategory readCategory() {
         System.out.print("카테고리 (1. 정보, 2. 공지, 3. 자유, 4. 질문): ");
-        int categoryChoice = Integer.parseInt(scanner.nextLine());
+        int categoryChoice = readNumber();
         return switch (categoryChoice) {
             case 1 -> PostCategory.INFO;
             case 2 -> PostCategory.NOTICE;
@@ -67,5 +67,13 @@ public class PostView {
 
     public void printMessage(String message) {
         System.out.println(message);
+    }
+
+    private int readNumber() {
+        try {
+            return Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("숫자를 입력해주세요.");
+        }
     }
 }
