@@ -1,32 +1,42 @@
-// PostController
-package org.sopt.post;
+package org.sopt.post.controller;
 
-import java.util.ArrayList;
+import org.sopt.post.domain.PostCategory;
+import org.sopt.post.exception.InvalidPostException;
+import org.sopt.post.exception.PostNotFoundException;
+import org.sopt.post.service.PostService;
+import org.sopt.post.view.PostView;
+import org.sopt.post.domain.Post;
+
 import java.util.List;
 
 public class PostController {
-    private final List<Post> posts = new ArrayList<>();
     private final PostView view;
+    private final PostService service;
 
-    public PostController(PostView view) {
+    public PostController(PostView view, PostService service) {
         this.view = view;
+        this.service = service;
     }
 
     public void run() {
         while (true) {
             view.printMenu();
-            int command = view.readCommand();
-            switch (command) {
-                case 1 -> createPost();
-                case 2 -> readPosts();
-                case 3 -> readPost();
-                case 4 -> updatePost();
-                case 5 -> deletePost();
-                case 6 -> {
-                    view.printMessage("프로그램을 종료합니다.");
-                    return;
+            try {
+                int command = view.readCommand();
+                switch (command) {
+                    case 1 -> createPost();
+                    case 2 -> readPosts();
+                    case 3 -> readPost();
+                    case 4 -> updatePost();
+                    case 5 -> deletePost();
+                    case 6 -> {
+                        view.printMessage("프로그램을 종료합니다.");
+                        return;
+                    }
+                    default -> view.printMessage("잘못된 입력입니다.");
                 }
-                default -> view.printMessage("잘못된 입력입니다.");
+            } catch (PostNotFoundException | InvalidPostException | IllegalArgumentException e) {
+                view.printMessage(e.getMessage());
             }
         }
     }
@@ -34,11 +44,15 @@ public class PostController {
     private void createPost() {
         String title = view.readTitle();
         String content = view.readContent();
-        posts.add(new Post(title, content));
+        PostCategory category = view.readCategory();
+        String author = view.readAuthor();
+        service.createPost(title, content, category, author);
         view.printMessage("게시글이 작성되었습니다.");
     }
 
     private void readPosts() {
+        List<Post> posts = service.getPosts();
+
         if (posts.isEmpty()) {
             view.printMessage("게시글이 없습니다.");
             return;
@@ -49,6 +63,8 @@ public class PostController {
     }
 
     private void readPost() {
+        List<Post> posts = service.getPosts();
+
         if (posts.isEmpty()) {
             view.printMessage("게시글이 없습니다.");
             return;
@@ -56,15 +72,14 @@ public class PostController {
 
         int index = view.readPostNumber("조회할 게시글 번호: ") - 1;
 
-        if (!isValidIndex(index)) {
-            view.printMessage("존재하지 않는 게시글입니다.");
-            return;
-        }
-        Post post = posts.get(index);
+        Post post = service.getPost(index);
+
         view.printPost(post);
     }
 
     private void updatePost() {
+        List<Post> posts = service.getPosts();
+
         if (posts.isEmpty()) {
             view.printMessage("게시글이 없습니다.");
             return;
@@ -72,23 +87,17 @@ public class PostController {
 
         int index = view.readPostNumber("수정할 게시글 번호: ") - 1;
 
-        if (!isValidIndex(index)) {
-            view.printMessage("존재하지 않는 게시글입니다.");
-            return;
-        }
-
         String newTitle = view.readTitle();
         String newContent = view.readContent();
 
-        Post post = posts.get(index);
-
-        post.updateTitle(newTitle);
-        post.updateContent(newContent);
+        service.updatePost(index, newTitle, newContent);
 
         view.printMessage("게시글이 수정되었습니다.");
     }
 
     private void deletePost() {
+        List<Post> posts = service.getPosts();
+
         if (posts.isEmpty()) {
             view.printMessage("게시글이 없습니다.");
             return;
@@ -96,17 +105,9 @@ public class PostController {
 
         int index = view.readPostNumber("삭제할 게시글 번호: ") - 1;
 
-        if (!isValidIndex(index)) {
-            view.printMessage("존재하지 않는 게시글입니다.");
-            return;
-        }
-
-        posts.remove(index);
+        service.deletePost(index);
 
         view.printMessage("게시글이 삭제되었습니다.");
     }
 
-    private boolean isValidIndex(int index) {
-        return index >= 0 && index < posts.size();
-    }
 }
