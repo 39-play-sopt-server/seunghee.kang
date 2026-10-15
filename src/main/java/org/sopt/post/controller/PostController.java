@@ -2,9 +2,9 @@ package org.sopt.post.controller;
 
 import org.sopt.global.response.ApiResponse;
 import org.sopt.global.response.ResponseCode;
-import org.sopt.post.domain.Post;
 import org.sopt.post.dto.request.CreatePostRequest;
 import org.sopt.post.dto.request.UpdatePostRequest;
+import org.sopt.post.dto.response.PostResponse;
 import org.sopt.post.service.PostService;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,18 +42,18 @@ public class PostController {
     }
 
     @GetMapping
-    public ApiResponse<List<Post>> readPosts(
+    public ApiResponse<List<PostResponse>> readPosts(
             @RequestParam(name = "page", defaultValue = "1") int page
     ) {
-        List<Post> posts = postService.getPosts();
+        List<PostResponse> posts = postService.getPosts();
         return ApiResponse.success(ResponseCode.OK, posts);
     }
 
     @GetMapping(path = "/{postId}")
-    public ApiResponse<Post> readPost(
+    public ApiResponse<PostResponse> readPost(
             @PathVariable(name = "postId") Long postId
     ) {
-        Post post = postService.getPost(postId);
+        PostResponse post = postService.getPost(postId);
         return ApiResponse.success(ResponseCode.OK, post);
     }
 
