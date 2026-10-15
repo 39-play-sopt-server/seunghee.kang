@@ -35,6 +35,7 @@ public class PostService {
 
     public PostResponse getPost(Long postId) {
         Post post = findPost(postId);
+        post.increaseViewCount();
         return PostResponse.from(post);
     }
 

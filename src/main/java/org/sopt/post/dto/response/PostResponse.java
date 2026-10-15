@@ -11,7 +11,8 @@ public record PostResponse(
         String content,
         PostCategory category,
         String author,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        long viewCount
 ) {
     public static PostResponse from(Post post) {
         return new PostResponse(
@@ -20,7 +21,8 @@ public record PostResponse(
                 post.getContent(),
                 post.getCategory(),
                 post.getAuthor(),
-                post.getCreatedAt()
+                post.getCreatedAt(),
+                post.getViewCount()
         );
     }
 }

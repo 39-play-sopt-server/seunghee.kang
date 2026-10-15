@@ -12,6 +12,7 @@ public class Post {
     private PostCategory category;
     private final String author;
     private final LocalDateTime createdAt;
+    private long viewCount;
 
     public Post(String title, String content, PostCategory category, String author) {
         validateTitle(title);
@@ -21,6 +22,7 @@ public class Post {
         this.category = category;
         this.author = author;
         this.createdAt = LocalDateTime.now();
+        this.viewCount = 0;
     }
 
     public Long getId() {
@@ -51,11 +53,19 @@ public class Post {
         return this.createdAt;
     }
 
+    public long getViewCount() {
+        return this.viewCount;
+    }
+
     public void update(String title, String content) {
         validateTitle(title);
         validateContent(content);
         this.title = title;
         this.content = content;
+    }
+
+    public void increaseViewCount() {
+        this.viewCount++;
     }
 
     private void validateTitle(String title) {
