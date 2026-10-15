@@ -2,36 +2,36 @@ package org.sopt.post.repository;
 
 import org.sopt.post.domain.Post;
 
+import org.springframework.stereotype.Repository;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class PostRepository {
     private final List<Post> posts = new ArrayList<>();
+    private Long sequence = 0L;
 
-    public void save(Post post) {
+    public Post save(Post post) {
+        post.assignId(++sequence);
         posts.add(post);
+        return post;
     }
 
     public List<Post> findAll() {
         return posts;
     }
 
-    public Post findById(int index) {
-        if (isValidIndex(index)) {
-            return posts.get(index);
+    public Post findById(Long id) {
+        for (Post post : posts) {
+            if (post.getId().equals(id)) {
+                return post;
+            }
         }
         return null;
     }
 
-    public boolean deleteById(int index) {
-        if (isValidIndex(index)) {
-            posts.remove(index);
-            return true;
-        }
-        return false;
-    }
-
-    private boolean isValidIndex(int index) {
-        return index >= 0 && index < posts.size();
+    public boolean deleteById(Long id) {
+        return posts.removeIf(post -> post.getId().equals(id));
     }
 }

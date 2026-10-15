@@ -1,113 +1,76 @@
 package org.sopt.post.controller;
 
-import org.sopt.post.domain.PostCategory;
-import org.sopt.post.exception.InvalidPostException;
-import org.sopt.post.exception.PostNotFoundException;
-import org.sopt.post.service.PostService;
-import org.sopt.post.view.PostView;
+import org.sopt.global.response.ApiResponse;
+import org.sopt.global.response.ResponseCode;
 import org.sopt.post.domain.Post;
+import org.sopt.post.dto.request.CreatePostRequest;
+import org.sopt.post.dto.request.UpdatePostRequest;
+import org.sopt.post.service.PostService;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@RestController
+@RequestMapping(path = "/api/v1/posts")
 public class PostController {
-    private final PostView view;
-    private final PostService service;
+    // 생성자를 이용한 의존성 주입
+    private final PostService postService;
 
-    public PostController(PostView view, PostService service) {
-        this.view = view;
-        this.service = service;
+    public PostController(PostService postService) {
+        this.postService = postService;
     }
 
-    public void run() {
-        while (true) {
-            view.printMenu();
-            try {
-                int command = view.readCommand();
-                switch (command) {
-                    case 1 -> createPost();
-                    case 2 -> readPosts();
-                    case 3 -> readPost();
-                    case 4 -> updatePost();
-                    case 5 -> deletePost();
-                    case 6 -> {
-                        view.printMessage("프로그램을 종료합니다.");
-                        return;
-                    }
-                    default -> view.printMessage("잘못된 입력입니다.");
-                }
-            } catch (PostNotFoundException | InvalidPostException | IllegalArgumentException e) {
-                view.printMessage(e.getMessage());
-            }
-        }
+    @PostMapping
+    public ApiResponse<Long> createPost(
+            @RequestBody(required = true) CreatePostRequest request
+    ) {
+        Long postId = postService.createPost(
+                request.title(),
+                request.content(),
+                request.category(),
+                request.author()
+        );
+        return ApiResponse.success(ResponseCode.CREATED, postId);
     }
 
-    private void createPost() {
-        String title = view.readTitle();
-        String content = view.readContent();
-        PostCategory category = view.readCategory();
-        String author = view.readAuthor();
-        service.createPost(title, content, category, author);
-        view.printMessage("게시글이 작성되었습니다.");
+    @GetMapping
+    public ApiResponse<List<Post>> readPosts(
+            @RequestParam(name = "page", defaultValue = "1") int page
+    ) {
+        List<Post> posts = postService.getPosts();
+        return ApiResponse.success(ResponseCode.OK, posts);
     }
 
-    private void readPosts() {
-        List<Post> posts = service.getPosts();
-
-        if (posts.isEmpty()) {
-            view.printMessage("게시글이 없습니다.");
-            return;
-        }
-        for (int i = 0; i < posts.size(); i++) {
-            view.printMessage((i + 1) + ". " + posts.get(i).getTitle());
-        }
+    @GetMapping(path = "/{postId}")
+    public ApiResponse<Post> readPost(
+            @PathVariable(name = "postId") Long postId
+    ) {
+        Post post = postService.getPost(postId);
+        return ApiResponse.success(ResponseCode.OK, post);
     }
 
-    private void readPost() {
-        List<Post> posts = service.getPosts();
-
-        if (posts.isEmpty()) {
-            view.printMessage("게시글이 없습니다.");
-            return;
-        }
-
-        int index = view.readPostNumber("조회할 게시글 번호: ") - 1;
-
-        Post post = service.getPost(index);
-
-        view.printPost(post);
+    @PutMapping(path = "/{postId}")
+    public ApiResponse<Void> updatePost(
+            @PathVariable(name = "postId") Long postId,
+            @RequestBody(required = true) UpdatePostRequest request
+    ) {
+        postService.updatePost(postId, request.title(), request.content());
+        return ApiResponse.success(ResponseCode.UPDATED);
     }
 
-    private void updatePost() {
-        List<Post> posts = service.getPosts();
-
-        if (posts.isEmpty()) {
-            view.printMessage("게시글이 없습니다.");
-            return;
-        }
-
-        int index = view.readPostNumber("수정할 게시글 번호: ") - 1;
-
-        String newTitle = view.readTitle();
-        String newContent = view.readContent();
-
-        service.updatePost(index, newTitle, newContent);
-
-        view.printMessage("게시글이 수정되었습니다.");
+    @DeleteMapping(path = "/{postId}")
+    public ApiResponse<Void> deletePost(
+            @PathVariable(name = "postId") Long postId
+    ) {
+        postService.deletePost(postId);
+        return ApiResponse.success(ResponseCode.DELETED);
     }
-
-    private void deletePost() {
-        List<Post> posts = service.getPosts();
-
-        if (posts.isEmpty()) {
-            view.printMessage("게시글이 없습니다.");
-            return;
-        }
-
-        int index = view.readPostNumber("삭제할 게시글 번호: ") - 1;
-
-        service.deletePost(index);
-
-        view.printMessage("게시글이 삭제되었습니다.");
-    }
-
 }

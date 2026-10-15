@@ -5,6 +5,7 @@ import org.sopt.post.exception.InvalidPostException;
 import java.time.LocalDateTime;
 
 public class Post {
+    private Long id;
     private String title;
     private String content;
     private PostCategory category;
@@ -19,6 +20,14 @@ public class Post {
         this.category = category;
         this.author = author;
         this.createdAt = LocalDateTime.now();
+    }
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public void assignId(Long id) {
+        this.id = id;
     }
 
     public String getTitle() {
