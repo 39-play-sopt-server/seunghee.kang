@@ -17,6 +17,7 @@ public class Post {
     public Post(String title, String content, PostCategory category, String author) {
         validateTitle(title);
         validateContent(content);
+        validateAuthor(author);
         this.title = title;
         this.content = content;
         this.category = category;
@@ -77,6 +78,12 @@ public class Post {
     private void validateContent(String content) {
         if (content == null || content.isBlank()) {
             throw new InvalidPostException(ErrorCode.POST_CONTENT_BLANK);
+        }
+    }
+
+    private void validateAuthor(String author) {
+        if (author == null || author.isBlank()) {
+            throw new InvalidPostException(ErrorCode.POST_AUTHOR_BLANK);
         }
     }
 }
