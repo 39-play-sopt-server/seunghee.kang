@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class PostRepository {
@@ -22,13 +23,13 @@ public class PostRepository {
         return posts;
     }
 
-    public Post findById(Long id) {
+    public Optional<Post> findById(Long id) {
         for (Post post : posts) {
             if (post.getId().equals(id)) {
-                return post;
+                return Optional.of(post);
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     public boolean deleteById(Long id) {

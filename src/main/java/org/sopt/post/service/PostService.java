@@ -51,11 +51,8 @@ public class PostService {
     }
 
     private Post findPost(Long postId) {
-        Post post = repository.findById(postId);
-        if (post == null) {
-            throw new PostNotFoundException(ErrorCode.POST_NOT_FOUND);
-        }
-        return post;
+        return repository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException(ErrorCode.POST_NOT_FOUND));
     }
 
 }
