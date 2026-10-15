@@ -1,5 +1,6 @@
 package org.sopt.post.service;
 
+import org.sopt.global.response.ErrorCode;
 import org.sopt.post.domain.Post;
 import org.sopt.post.domain.PostCategory;
 import org.sopt.post.dto.response.PostResponse;
@@ -44,14 +45,14 @@ public class PostService {
 
     public void deletePost(Long postId) {
         if (!repository.deleteById(postId)) {
-            throw new PostNotFoundException("삭제할 게시글이 존재하지 않습니다.");
+            throw new PostNotFoundException(ErrorCode.POST_NOT_FOUND);
         }
     }
 
     private Post findPost(Long postId) {
         Post post = repository.findById(postId);
         if (post == null) {
-            throw new PostNotFoundException("게시글이 존재하지 않습니다.");
+            throw new PostNotFoundException(ErrorCode.POST_NOT_FOUND);
         }
         return post;
     }

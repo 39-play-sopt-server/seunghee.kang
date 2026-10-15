@@ -1,5 +1,6 @@
 package org.sopt.post.domain;
 
+import org.sopt.global.response.ErrorCode;
 import org.sopt.post.exception.InvalidPostException;
 
 import java.time.LocalDateTime;
@@ -59,13 +60,13 @@ public class Post {
 
     private void validateTitle(String title) {
         if (title == null || title.isBlank()) {
-            throw new InvalidPostException("제목은 비어있을 수 없습니다.");
+            throw new InvalidPostException(ErrorCode.POST_TITLE_BLANK);
         }
     }
 
     private void validateContent(String content) {
         if (content == null || content.isBlank()) {
-            throw new InvalidPostException("내용은 비어있을 수 없습니다.");
+            throw new InvalidPostException(ErrorCode.POST_CONTENT_BLANK);
         }
     }
 }
