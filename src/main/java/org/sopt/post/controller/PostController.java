@@ -1,7 +1,7 @@
 package org.sopt.post.controller;
 
 import org.sopt.global.response.ApiResponse;
-import org.sopt.global.response.ResponseCode;
+import org.sopt.global.response.SuccessCode;
 import org.sopt.post.dto.request.CreatePostRequest;
 import org.sopt.post.dto.request.UpdatePostRequest;
 import org.sopt.post.dto.response.PostResponse;
@@ -21,7 +21,6 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/api/v1/posts")
 public class PostController {
-    // 생성자를 이용한 의존성 주입
     private final PostService postService;
 
     public PostController(PostService postService) {
@@ -38,7 +37,7 @@ public class PostController {
                 request.category(),
                 request.author()
         );
-        return ApiResponse.success(ResponseCode.CREATED, postId);
+        return ApiResponse.success(SuccessCode.POST_CREATED, postId);
     }
 
     @GetMapping
@@ -46,7 +45,7 @@ public class PostController {
             @RequestParam(name = "page", defaultValue = "1") int page
     ) {
         List<PostResponse> posts = postService.getPosts();
-        return ApiResponse.success(ResponseCode.OK, posts);
+        return ApiResponse.success(SuccessCode.POST_LIST_READ, posts);
     }
 
     @GetMapping(path = "/{postId}")
@@ -54,7 +53,7 @@ public class PostController {
             @PathVariable(name = "postId") Long postId
     ) {
         PostResponse post = postService.getPost(postId);
-        return ApiResponse.success(ResponseCode.OK, post);
+        return ApiResponse.success(SuccessCode.POST_READ, post);
     }
 
     @PutMapping(path = "/{postId}")
@@ -63,7 +62,7 @@ public class PostController {
             @RequestBody(required = true) UpdatePostRequest request
     ) {
         postService.updatePost(postId, request.title(), request.content());
-        return ApiResponse.success(ResponseCode.UPDATED);
+        return ApiResponse.success(SuccessCode.POST_UPDATED);
     }
 
     @DeleteMapping(path = "/{postId}")
@@ -71,6 +70,6 @@ public class PostController {
             @PathVariable(name = "postId") Long postId
     ) {
         postService.deletePost(postId);
-        return ApiResponse.success(ResponseCode.DELETED);
+        return ApiResponse.success(SuccessCode.POST_DELETED);
     }
 }

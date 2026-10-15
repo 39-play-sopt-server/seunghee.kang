@@ -2,17 +2,17 @@ package org.sopt.global.response;
 
 public class ApiResponse<T> {
 
-    private int code;
-    private String message;
-    private T data;
+    private final String code;
+    private final String message;
+    private final T data;
 
-    public ApiResponse(int code, String message, T data) {
+    public ApiResponse(String code, String message, T data) {
         this.code = code;
         this.message = message;
         this.data = data;
     }
 
-    public int getCode() {
+    public String getCode() {
         return code;
     }
 
@@ -24,33 +24,33 @@ public class ApiResponse<T> {
         return data;
     }
 
-    public static <T> ApiResponse<T> success(ResponseCode responseCode, T data) {
+    public static <T> ApiResponse<T> success(SuccessCode successCode, T data) {
         return new ApiResponse<>(
-                responseCode.getCode(),
-                responseCode.getMessage(),
+                successCode.getCode(),
+                successCode.getMessage(),
                 data
         );
     }
 
-    public static ApiResponse<Void> success(ResponseCode responseCode) {
+    public static ApiResponse<Void> success(SuccessCode successCode) {
         return new ApiResponse<>(
-                responseCode.getCode(),
-                responseCode.getMessage(),
+                successCode.getCode(),
+                successCode.getMessage(),
                 null
         );
     }
 
-    public static <T> ApiResponse<T> fail(ResponseCode responseCode) {
+    public static <T> ApiResponse<T> fail(ErrorCode errorCode) {
         return new ApiResponse<>(
-                responseCode.getCode(),
-                responseCode.getMessage(),
+                errorCode.getCode(),
+                errorCode.getMessage(),
                 null
         );
     }
 
-    public static <T> ApiResponse<T> fail(ResponseCode responseCode, String message) {
+    public static <T> ApiResponse<T> fail(ErrorCode errorCode, String message) {
         return new ApiResponse<>(
-                responseCode.getCode(),
+                errorCode.getCode(),
                 message,
                 null
         );
