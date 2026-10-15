@@ -6,6 +6,7 @@ import org.sopt.post.dto.request.CreatePostRequest;
 import org.sopt.post.dto.request.UpdatePostRequest;
 import org.sopt.post.dto.response.PostResponse;
 import org.sopt.post.service.PostService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,7 +29,7 @@ public class PostController {
     }
 
     @PostMapping
-    public ApiResponse<Long> createPost(
+    public ResponseEntity<ApiResponse<Long>> createPost(
             @RequestBody(required = true) CreatePostRequest request
     ) {
         Long postId = postService.createPost(
@@ -37,39 +38,49 @@ public class PostController {
                 request.category(),
                 request.author()
         );
-        return ApiResponse.success(SuccessCode.POST_CREATED, postId);
+        return ResponseEntity
+                .status(SuccessCode.POST_CREATED.getHttpStatus())
+                .body(ApiResponse.success(SuccessCode.POST_CREATED, postId));
     }
 
     @GetMapping
-    public ApiResponse<List<PostResponse>> readPosts(
+    public ResponseEntity<ApiResponse<List<PostResponse>>> readPosts(
             @RequestParam(name = "page", defaultValue = "1") int page
     ) {
         List<PostResponse> posts = postService.getPosts();
-        return ApiResponse.success(SuccessCode.POST_LIST_READ, posts);
+        return ResponseEntity
+                .status(SuccessCode.POST_LIST_READ.getHttpStatus())
+                .body(ApiResponse.success(SuccessCode.POST_LIST_READ, posts));
     }
 
     @GetMapping(path = "/{postId}")
-    public ApiResponse<PostResponse> readPost(
+    public ResponseEntity<ApiResponse<PostResponse>> readPost(
             @PathVariable(name = "postId") Long postId
     ) {
         PostResponse post = postService.getPost(postId);
-        return ApiResponse.success(SuccessCode.POST_READ, post);
+        return ResponseEntity
+                .status(SuccessCode.POST_READ.getHttpStatus())
+                .body(ApiResponse.success(SuccessCode.POST_READ, post));
     }
 
     @PutMapping(path = "/{postId}")
-    public ApiResponse<Void> updatePost(
+    public ResponseEntity<ApiResponse<Void>> updatePost(
             @PathVariable(name = "postId") Long postId,
             @RequestBody(required = true) UpdatePostRequest request
     ) {
         postService.updatePost(postId, request.title(), request.content());
-        return ApiResponse.success(SuccessCode.POST_UPDATED);
+        return ResponseEntity
+                .status(SuccessCode.POST_UPDATED.getHttpStatus())
+                .body(ApiResponse.success(SuccessCode.POST_UPDATED));
     }
 
     @DeleteMapping(path = "/{postId}")
-    public ApiResponse<Void> deletePost(
+    public ResponseEntity<ApiResponse<Void>> deletePost(
             @PathVariable(name = "postId") Long postId
     ) {
         postService.deletePost(postId);
-        return ApiResponse.success(SuccessCode.POST_DELETED);
+        return ResponseEntity
+                .status(SuccessCode.POST_DELETED.getHttpStatus())
+                .body(ApiResponse.success(SuccessCode.POST_DELETED));
     }
 }
