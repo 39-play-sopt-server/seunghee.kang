@@ -4,9 +4,12 @@ package org.sopt.post.view;
 import org.sopt.post.domain.Post;
 import org.sopt.post.domain.PostCategory;
 
+import org.springframework.stereotype.Component;
+
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
+@Component
 public class PostView {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     private final Scanner scanner = new Scanner(System.in);
