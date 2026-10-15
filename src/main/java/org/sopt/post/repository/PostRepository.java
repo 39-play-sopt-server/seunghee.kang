@@ -20,7 +20,7 @@ public class PostRepository {
     }
 
     public List<Post> findAll() {
-        return posts;
+        return List.copyOf(posts);
     }
 
     public Optional<Post> findById(Long id) {
