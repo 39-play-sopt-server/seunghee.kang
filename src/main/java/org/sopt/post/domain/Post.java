@@ -58,11 +58,11 @@ public class Post {
         return this.viewCount;
     }
 
-    public void update(String title, String content) {
-        validateTitle(title);
-        validateContent(content);
-        this.title = title;
-        this.content = content;
+    public void update(String newTitle, String newContent) {
+        validateTitle(newTitle);
+        validateContent(newContent);
+        this.title = newTitle;
+        this.content = newContent;
     }
 
     public void increaseViewCount() {
