@@ -1,5 +1,6 @@
 package org.sopt.post.domain;
 
+import org.sopt.global.response.ErrorCode;
 import org.sopt.post.exception.InvalidPostException;
 
 import java.time.LocalDateTime;
@@ -11,15 +12,18 @@ public class Post {
     private PostCategory category;
     private final String author;
     private final LocalDateTime createdAt;
+    private long viewCount;
 
     public Post(String title, String content, PostCategory category, String author) {
         validateTitle(title);
         validateContent(content);
+        validateAuthor(author);
         this.title = title;
         this.content = content;
         this.category = category;
         this.author = author;
         this.createdAt = LocalDateTime.now();
+        this.viewCount = 0;
     }
 
     public Long getId() {
@@ -50,22 +54,36 @@ public class Post {
         return this.createdAt;
     }
 
-    public void update(String title, String content) {
-        validateTitle(title);
-        validateContent(content);
-        this.title = title;
-        this.content = content;
+    public long getViewCount() {
+        return this.viewCount;
+    }
+
+    public void update(String newTitle, String newContent) {
+        validateTitle(newTitle);
+        validateContent(newContent);
+        this.title = newTitle;
+        this.content = newContent;
+    }
+
+    public void increaseViewCount() {
+        this.viewCount++;
     }
 
     private void validateTitle(String title) {
         if (title == null || title.isBlank()) {
-            throw new InvalidPostException("제목은 비어있을 수 없습니다.");
+            throw new InvalidPostException(ErrorCode.POST_TITLE_BLANK);
         }
     }
 
     private void validateContent(String content) {
         if (content == null || content.isBlank()) {
-            throw new InvalidPostException("내용은 비어있을 수 없습니다.");
+            throw new InvalidPostException(ErrorCode.POST_CONTENT_BLANK);
+        }
+    }
+
+    private void validateAuthor(String author) {
+        if (author == null || author.isBlank()) {
+            throw new InvalidPostException(ErrorCode.POST_AUTHOR_BLANK);
         }
     }
 }
