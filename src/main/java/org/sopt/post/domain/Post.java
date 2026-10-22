@@ -1,18 +1,25 @@
 package org.sopt.post.domain;
 
+import jakarta.persistence.*;
 import org.sopt.global.response.ErrorCode;
 import org.sopt.post.exception.InvalidPostException;
 
 import java.time.LocalDateTime;
 
+@Entity
 public class Post {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
     private String content;
+    @Enumerated(EnumType.STRING)
     private PostCategory category;
-    private final String author;
-    private final LocalDateTime createdAt;
+    private String author;
+    private LocalDateTime createdAt;
     private long viewCount;
+
+    protected Post() {}
 
     public Post(String title, String content, PostCategory category, String author) {
         validateTitle(title);
