@@ -1,5 +1,6 @@
 package org.sopt.post.service;
 
+import org.springframework.transaction.annotation.Transactional;
 import org.sopt.global.response.ErrorCode;
 import org.sopt.post.domain.Post;
 import org.sopt.post.domain.PostCategory;
@@ -33,21 +34,22 @@ public class PostService {
         return responses;
     }
 
+    @Transactional
     public PostResponse getPost(Long postId) {
         Post post = findPost(postId);
         post.increaseViewCount();
         return PostResponse.from(post);
     }
 
+    @Transactional
     public void updatePost(Long postId, String title, String content) {
         Post post = findPost(postId);
         post.update(title, content);
     }
 
     public void deletePost(Long postId) {
-        if (!repository.deleteById(postId)) {
-            throw new PostNotFoundException(ErrorCode.POST_NOT_FOUND);
-        }
+        Post post = findPost(postId);
+        repository.delete(post);
     }
 
     private Post findPost(Long postId) {
