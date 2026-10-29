@@ -7,11 +7,13 @@ import org.sopt.post.exception.InvalidPostException;
 
 @Entity
 public class Post extends BaseEntity {
+    private static final int MAX_TITLE_LENGTH = 100;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = MAX_TITLE_LENGTH)
     private String title;
 
     @Column(nullable = false, columnDefinition = "TEXT")
@@ -77,6 +79,9 @@ public class Post extends BaseEntity {
     private void validateTitle(String title) {
         if (title == null || title.isBlank()) {
             throw new InvalidPostException(ErrorCode.POST_TITLE_BLANK);
+        }
+        if (title.length() > MAX_TITLE_LENGTH) {
+            throw new InvalidPostException(ErrorCode.POST_TITLE_TOO_LONG);
         }
     }
 
