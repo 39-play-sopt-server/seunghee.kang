@@ -20,13 +20,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(path = "/api/v1/posts")
-public class PostController {
+public class PostController implements PostApi {
     private final PostService postService;
 
     public PostController(PostService postService) {
         this.postService = postService;
     }
 
+    @Override
     @PostMapping
     public ResponseEntity<ApiResponse<Long>> createPost(
             @RequestBody(required = true) CreatePostRequest request
@@ -42,6 +43,7 @@ public class PostController {
                 .body(ApiResponse.success(SuccessCode.POST_CREATED, postId));
     }
 
+    @Override
     @GetMapping
     public ResponseEntity<ApiResponse<PostListResponse>> readPosts(
             @RequestParam(name = "page", defaultValue = "1") int page,
@@ -53,6 +55,7 @@ public class PostController {
                 .body(ApiResponse.success(SuccessCode.POST_LIST_READ, posts));
     }
 
+    @Override
     @GetMapping(path = "/{postId}")
     public ResponseEntity<ApiResponse<PostResponse>> readPost(
             @PathVariable(name = "postId") Long postId
@@ -63,6 +66,7 @@ public class PostController {
                 .body(ApiResponse.success(SuccessCode.POST_READ, post));
     }
 
+    @Override
     @PutMapping(path = "/{postId}")
     public ResponseEntity<ApiResponse<Void>> updatePost(
             @PathVariable(name = "postId") Long postId,
@@ -74,6 +78,7 @@ public class PostController {
                 .body(ApiResponse.success(SuccessCode.POST_UPDATED));
     }
 
+    @Override
     @DeleteMapping(path = "/{postId}")
     public ResponseEntity<ApiResponse<Void>> deletePost(
             @PathVariable(name = "postId") Long postId

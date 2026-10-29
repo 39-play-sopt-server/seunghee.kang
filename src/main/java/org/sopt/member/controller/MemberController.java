@@ -14,13 +14,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(path = "/api/v1/members")
-public class MemberController {
+public class MemberController implements MemberApi {
     private final MemberService memberService;
 
     public MemberController(MemberService memberService) {
         this.memberService = memberService;
     }
 
+    @Override
     @PostMapping
     public ResponseEntity<ApiResponse<Long>> createMember(
             @RequestBody CreateMemberRequest request
@@ -31,6 +32,7 @@ public class MemberController {
                 .body(ApiResponse.success(SuccessCode.MEMBER_CREATED, memberId));
     }
 
+    @Override
     @DeleteMapping(path = "/{memberId}")
     public ResponseEntity<ApiResponse<Void>> deleteMember(
             @PathVariable(name = "memberId") Long memberId
