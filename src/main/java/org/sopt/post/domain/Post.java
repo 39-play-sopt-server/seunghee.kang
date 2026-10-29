@@ -1,22 +1,29 @@
 package org.sopt.post.domain;
 
 import jakarta.persistence.*;
+import org.sopt.global.entity.BaseEntity;
 import org.sopt.global.response.ErrorCode;
 import org.sopt.post.exception.InvalidPostException;
 
-import java.time.LocalDateTime;
-
 @Entity
-public class Post {
+public class Post extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false, length = 100)
     private String title;
+
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
+
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
     private PostCategory category;
+
     private String author;
-    private LocalDateTime createdAt;
+
+    @Column(nullable = false)
     private long viewCount;
 
     protected Post() {}
@@ -29,16 +36,11 @@ public class Post {
         this.content = content;
         this.category = category;
         this.author = author;
-        this.createdAt = LocalDateTime.now();
         this.viewCount = 0;
     }
 
     public Long getId() {
         return this.id;
-    }
-
-    public void assignId(Long id) {
-        this.id = id;
     }
 
     public String getTitle() {
@@ -55,10 +57,6 @@ public class Post {
 
     public String getAuthor() {
         return this.author;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return this.createdAt;
     }
 
     public long getViewCount() {
