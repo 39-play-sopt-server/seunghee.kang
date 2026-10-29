@@ -4,6 +4,7 @@ import org.sopt.global.response.ApiResponse;
 import org.sopt.global.response.SuccessCode;
 import org.sopt.post.dto.request.CreatePostRequest;
 import org.sopt.post.dto.request.UpdatePostRequest;
+import org.sopt.post.dto.response.PostListResponse;
 import org.sopt.post.dto.response.PostResponse;
 import org.sopt.post.service.PostService;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequestMapping(path = "/api/v1/posts")
@@ -44,10 +43,11 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<PostResponse>>> readPosts(
-            @RequestParam(name = "page", defaultValue = "1") int page
+    public ResponseEntity<ApiResponse<PostListResponse>> readPosts(
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size
     ) {
-        List<PostResponse> posts = postService.getPosts();
+        PostListResponse posts = postService.getPosts(page, size);
         return ResponseEntity
                 .status(SuccessCode.POST_LIST_READ.getHttpStatus())
                 .body(ApiResponse.success(SuccessCode.POST_LIST_READ, posts));

@@ -6,18 +6,22 @@ import org.sopt.member.exception.MemberNotFoundException;
 import org.sopt.member.repository.MemberRepository;
 import org.sopt.post.domain.Post;
 import org.sopt.post.domain.PostCategory;
+import org.sopt.post.dto.response.PostListResponse;
 import org.sopt.post.dto.response.PostResponse;
 import org.sopt.post.exception.InvalidPostException;
 import org.sopt.post.exception.PostNotFoundException;
 import org.sopt.post.repository.PostRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Service
 public class PostService {
+    private static final int MAX_PAGE_SIZE = 50;
+
     private final PostRepository repository;
     private final MemberRepository memberRepository;
 
@@ -38,12 +42,13 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public List<PostResponse> getPosts() {
-        List<PostResponse> responses = new ArrayList<>();
-        for (Post post : repository.findAll()) {
-            responses.add(PostResponse.from(post));
+    public PostListResponse getPosts(int page, int size) {
+        if (page < 1 || size < 1 || size > MAX_PAGE_SIZE) {
+            throw new InvalidPostException(ErrorCode.INVALID_PARAMETER);
         }
-        return responses;
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createdAt", "id"));
+        Page<Post> postPage = repository.findAll(pageable);
+        return PostListResponse.from(postPage);
     }
 
     @Transactional
