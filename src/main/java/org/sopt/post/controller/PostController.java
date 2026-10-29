@@ -36,7 +36,7 @@ public class PostController {
                 request.title(),
                 request.content(),
                 request.category(),
-                request.author()
+                request.memberId()
         );
         return ResponseEntity
                 .status(SuccessCode.POST_CREATED.getHttpStatus())

@@ -3,6 +3,7 @@ package org.sopt.post.domain;
 import jakarta.persistence.*;
 import org.sopt.global.entity.BaseEntity;
 import org.sopt.global.response.ErrorCode;
+import org.sopt.member.domain.Member;
 import org.sopt.post.exception.InvalidPostException;
 
 @Entity
@@ -23,21 +24,24 @@ public class Post extends BaseEntity {
     @Column(nullable = false, length = 20)
     private PostCategory category;
 
-    private String author;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
 
     @Column(nullable = false)
     private long viewCount;
 
     protected Post() {}
 
-    public Post(String title, String content, PostCategory category, String author) {
+    public Post(String title, String content, PostCategory category, Member member) {
         validateTitle(title);
         validateContent(content);
-        validateAuthor(author);
+        validateCategory(category);
+        validateMember(member);
         this.title = title;
         this.content = content;
         this.category = category;
-        this.author = author;
+        this.member = member;
         this.viewCount = 0;
     }
 
@@ -57,8 +61,8 @@ public class Post extends BaseEntity {
         return this.category;
     }
 
-    public String getAuthor() {
-        return this.author;
+    public Member getMember() {
+        return this.member;
     }
 
     public long getViewCount() {
@@ -91,9 +95,15 @@ public class Post extends BaseEntity {
         }
     }
 
-    private void validateAuthor(String author) {
-        if (author == null || author.isBlank()) {
-            throw new InvalidPostException(ErrorCode.POST_AUTHOR_BLANK);
+    private void validateCategory(PostCategory category) {
+        if (category == null) {
+            throw new InvalidPostException(ErrorCode.POST_CATEGORY_REQUIRED);
+        }
+    }
+
+    private void validateMember(Member member) {
+        if (member == null) {
+            throw new InvalidPostException(ErrorCode.POST_MEMBER_REQUIRED);
         }
     }
 }

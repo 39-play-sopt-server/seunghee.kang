@@ -6,6 +6,6 @@ public record CreatePostRequest(
         String title,
         String content,
         PostCategory category,
-        String author
+        Long memberId
 ) {
 }
