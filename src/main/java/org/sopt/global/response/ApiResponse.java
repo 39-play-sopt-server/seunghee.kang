@@ -33,11 +33,7 @@ public class ApiResponse<T> {
     }
 
     public static ApiResponse<Void> success(SuccessCode successCode) {
-        return new ApiResponse<>(
-                successCode.getCode(),
-                successCode.getMessage(),
-                null
-        );
+        return success(successCode, null);
     }
 
     public static <T> ApiResponse<T> fail(ErrorCode errorCode) {
