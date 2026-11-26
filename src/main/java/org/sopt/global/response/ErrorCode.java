@@ -10,6 +10,7 @@ public enum ErrorCode {
     POST_CATEGORY_REQUIRED(HttpStatus.BAD_REQUEST, "POST_CATEGORY_REQUIRED", "카테고리는 필수입니다."),
     POST_CONTENT_BLANK(HttpStatus.BAD_REQUEST, "POST_CONTENT_BLANK", "내용은 비어있을 수 없습니다."),
     POST_MEMBER_REQUIRED(HttpStatus.BAD_REQUEST, "POST_MEMBER_REQUIRED", "작성자 정보가 필요합니다."),
+    POST_FORBIDDEN(HttpStatus.FORBIDDEN, "POST_FORBIDDEN", "게시글 작성자만 수정, 삭제할 수 있습니다."),
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER_NOT_FOUND", "존재하지 않는 회원입니다."),
     MEMBER_NAME_BLANK(HttpStatus.BAD_REQUEST, "MEMBER_NAME_BLANK", "이름은 비어있을 수 없습니다."),
     MEMBER_NAME_TOO_LONG(HttpStatus.BAD_REQUEST, "MEMBER_NAME_TOO_LONG", "이름은 20자 이하여야 합니다."),

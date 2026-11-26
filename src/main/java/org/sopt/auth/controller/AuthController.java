@@ -51,6 +51,14 @@ public class AuthController {
         return respondWithTokens(tokens, SuccessCode.TOKEN_REISSUED);
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<Void>> logout() {
+        return ResponseEntity
+                .status(SuccessCode.LOGOUT_SUCCESS.getHttpStatus())
+                .header(HttpHeaders.SET_COOKIE, refreshTokenCookieProvider.expire().toString())
+                .body(ApiResponse.success(SuccessCode.LOGOUT_SUCCESS));
+    }
+
     private ResponseEntity<ApiResponse<Void>> respondWithTokens(TokenPair tokens, SuccessCode successCode) {
         return ResponseEntity
                 .status(successCode.getHttpStatus())
