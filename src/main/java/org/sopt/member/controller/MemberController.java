@@ -5,7 +5,9 @@ import org.sopt.global.response.SuccessCode;
 import org.sopt.member.dto.request.CreateMemberRequest;
 import org.sopt.member.service.MemberService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,10 +28,17 @@ public class MemberController implements MemberApi {
     public ResponseEntity<ApiResponse<Long>> createMember(
             @RequestBody CreateMemberRequest request
     ) {
-        Long memberId = memberService.createMember(request.name(), request.email());
+        Long memberId = memberService.createMember(request.name(), request.email(), request.password());
         return ResponseEntity
                 .status(SuccessCode.MEMBER_CREATED.getHttpStatus())
                 .body(ApiResponse.success(SuccessCode.MEMBER_CREATED, memberId));
+    }
+
+    @GetMapping(path = "/me")
+    public ResponseEntity<ApiResponse<Long>> me(@AuthenticationPrincipal Long memberId) {
+        return ResponseEntity
+                .status(SuccessCode.MEMBER_ME_READ.getHttpStatus())
+                .body(ApiResponse.success(SuccessCode.MEMBER_ME_READ, memberId));
     }
 
     @Override

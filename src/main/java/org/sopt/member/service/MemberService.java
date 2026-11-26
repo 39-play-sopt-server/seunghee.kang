@@ -7,6 +7,7 @@ import org.sopt.member.exception.MemberHasPostsException;
 import org.sopt.member.exception.MemberNotFoundException;
 import org.sopt.member.repository.MemberRepository;
 import org.sopt.post.repository.PostRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,15 +15,21 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final PostRepository postRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public MemberService(MemberRepository memberRepository, PostRepository postRepository) {
+    public MemberService(
+            MemberRepository memberRepository,
+            PostRepository postRepository,
+            PasswordEncoder passwordEncoder
+    ) {
         this.memberRepository = memberRepository;
         this.postRepository = postRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
-    public Long createMember(String name, String email) {
-        Member member = new Member(name, email);
+    public Long createMember(String name, String email, String password) {
+        Member member = new Member(name, email, passwordEncoder.encode(password));
         if (memberRepository.existsByEmail(email)) {
             throw new DuplicateEmailException(ErrorCode.DUPLICATE_EMAIL);
         }
