@@ -24,13 +24,17 @@ public class Member extends BaseEntity {
     @Column(nullable = false, length = MAX_EMAIL_LENGTH, unique = true)
     private String email;
 
+    @Column(nullable = false)
+    private String password;
+
     protected Member() {}
 
-    public Member(String name, String email) {
+    public Member(String name, String email, String password) {
         validateName(name);
         validateEmail(email);
         this.name = name;
         this.email = email;
+        this.password = password;
     }
 
     public Long getId() {
@@ -43,6 +47,10 @@ public class Member extends BaseEntity {
 
     public String getEmail() {
         return this.email;
+    }
+
+    public String getPassword() {
+        return this.password;
     }
 
     private void validateName(String name) {

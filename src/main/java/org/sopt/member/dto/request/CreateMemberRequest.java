@@ -7,6 +7,9 @@ public record CreateMemberRequest(
         String name,
 
         @Schema(description = "이메일 (최대 100자, 중복 불가)", example = "test@sopt.org")
-        String email
+        String email,
+
+        @Schema(description = "비밀번호", example = "password1234")
+        String password
 ) {
 }
