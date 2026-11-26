@@ -12,7 +12,8 @@ public enum SuccessCode {
     MEMBER_DELETED(HttpStatus.OK, "MEMBER_DELETED", "회원이 삭제되었습니다."),
     MEMBER_ME_READ(HttpStatus.OK, "MEMBER_ME_READ", "내 정보가 조회되었습니다."),
     SIGNUP_SUCCESS(HttpStatus.CREATED, "SIGNUP_SUCCESS", "회원가입이 완료되었습니다."),
-    LOGIN_SUCCESS(HttpStatus.OK, "LOGIN_SUCCESS", "로그인에 성공했습니다.");
+    LOGIN_SUCCESS(HttpStatus.OK, "LOGIN_SUCCESS", "로그인에 성공했습니다."),
+    TOKEN_REISSUED(HttpStatus.OK, "TOKEN_REISSUED", "토큰이 재발급되었습니다.");
 
     private final String code;
     private final String message;
