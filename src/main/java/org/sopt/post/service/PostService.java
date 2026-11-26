@@ -9,6 +9,7 @@ import org.sopt.post.domain.PostCategory;
 import org.sopt.post.dto.response.PostListResponse;
 import org.sopt.post.dto.response.PostResponse;
 import org.sopt.post.exception.InvalidPostException;
+import org.sopt.post.exception.PostForbiddenException;
 import org.sopt.post.exception.PostNotFoundException;
 import org.sopt.post.repository.PostRepository;
 import org.springframework.data.domain.Page;
@@ -59,15 +60,23 @@ public class PostService {
     }
 
     @Transactional
-    public void updatePost(Long postId, String title, String content) {
+    public void updatePost(Long postId, Long memberId, String title, String content) {
         Post post = findPost(postId);
+        validateAuthor(post, memberId);
         post.update(title, content);
     }
 
     @Transactional
-    public void deletePost(Long postId) {
+    public void deletePost(Long postId, Long memberId) {
         Post post = findPost(postId);
+        validateAuthor(post, memberId);
         repository.delete(post);
+    }
+
+    private void validateAuthor(Post post, Long memberId) {
+        if (!post.isWrittenBy(memberId)) {
+            throw new PostForbiddenException(ErrorCode.POST_FORBIDDEN);
+        }
     }
 
     private Post findPost(Long postId) {

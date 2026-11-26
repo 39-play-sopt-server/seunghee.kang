@@ -16,15 +16,16 @@ import org.springframework.http.ResponseEntity;
 @Tag(name = "Post", description = "게시글 API")
 public interface PostApi {
 
-    @Operation(summary = "게시글 작성", description = "회원 id를 작성자로 하여 게시글을 작성합니다. 생성된 게시글 id를 반환합니다.")
+    @Operation(summary = "게시글 작성", description = "로그인한 회원을 작성자로 하여 게시글을 작성합니다. 생성된 게시글 id를 반환합니다. (인증 필요)")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "게시글 작성 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "400",
-                    description = "POST_TITLE_BLANK, POST_TITLE_TOO_LONG, POST_CONTENT_BLANK, POST_CATEGORY_REQUIRED, POST_MEMBER_REQUIRED, INVALID_REQUEST_BODY",
+                    description = "POST_TITLE_BLANK, POST_TITLE_TOO_LONG, POST_CONTENT_BLANK, POST_CATEGORY_REQUIRED, INVALID_REQUEST_BODY",
                     content = @Content(mediaType = "application/json", examples = @ExampleObject(
                             value = "{\"code\": \"POST_TITLE_BLANK\", \"message\": \"제목은 비어있을 수 없습니다.\", \"data\": null}"))
             ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "토큰이 없거나 유효하지 않음"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "404",
                     description = "MEMBER_NOT_FOUND",
@@ -38,7 +39,7 @@ public interface PostApi {
                             value = "{\"code\": \"UNSUPPORTED_MEDIA_TYPE\", \"message\": \"지원하지 않는 Content-Type입니다.\", \"data\": null}"))
             )
     })
-    ResponseEntity<ApiResponse<Long>> createPost(CreatePostRequest request);
+    ResponseEntity<ApiResponse<Long>> createPost(@Parameter(hidden = true) Long memberId, CreatePostRequest request);
 
     @Operation(summary = "게시글 목록 조회", description = "게시글 목록을 생성일 기준 최신순으로 페이지 단위로 조회합니다.")
     @ApiResponses({
@@ -75,9 +76,16 @@ public interface PostApi {
             @Parameter(description = "게시글 id", example = "1") Long postId
     );
 
-    @Operation(summary = "게시글 수정", description = "게시글의 제목과 내용을 수정합니다.")
+    @Operation(summary = "게시글 수정", description = "게시글의 제목과 내용을 수정합니다. 작성자 본인만 가능합니다. (인증 필요)")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "게시글 수정 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "토큰이 없거나 유효하지 않음"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "403",
+                    description = "POST_FORBIDDEN (작성자가 아님)",
+                    content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                            value = "{\"code\": \"POST_FORBIDDEN\", \"message\": \"게시글 작성자만 수정, 삭제할 수 있습니다.\", \"data\": null}"))
+            ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "400",
                     description = "POST_TITLE_BLANK, POST_TITLE_TOO_LONG, POST_CONTENT_BLANK, INVALID_REQUEST_BODY, INVALID_PARAMETER",
@@ -98,13 +106,21 @@ public interface PostApi {
             )
     })
     ResponseEntity<ApiResponse<Void>> updatePost(
+            @Parameter(hidden = true) Long memberId,
             @Parameter(description = "게시글 id", example = "1") Long postId,
             UpdatePostRequest request
     );
 
-    @Operation(summary = "게시글 삭제", description = "게시글을 삭제합니다.")
+    @Operation(summary = "게시글 삭제", description = "게시글을 삭제합니다. 작성자 본인만 가능합니다. (인증 필요)")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "게시글 삭제 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "토큰이 없거나 유효하지 않음"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "403",
+                    description = "POST_FORBIDDEN (작성자가 아님)",
+                    content = @Content(mediaType = "application/json", examples = @ExampleObject(
+                            value = "{\"code\": \"POST_FORBIDDEN\", \"message\": \"게시글 작성자만 수정, 삭제할 수 있습니다.\", \"data\": null}"))
+            ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "404",
                     description = "POST_NOT_FOUND",
@@ -113,6 +129,7 @@ public interface PostApi {
             )
     })
     ResponseEntity<ApiResponse<Void>> deletePost(
+            @Parameter(hidden = true) Long memberId,
             @Parameter(description = "게시글 id", example = "1") Long postId
     );
 }

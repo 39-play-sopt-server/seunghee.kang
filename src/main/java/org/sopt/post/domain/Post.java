@@ -76,6 +76,10 @@ public class Post extends BaseEntity {
         this.content = newContent;
     }
 
+    public boolean isWrittenBy(Long memberId) {
+        return this.member.getId().equals(memberId);
+    }
+
     public void increaseViewCount() {
         this.viewCount++;
     }

@@ -1,9 +1,10 @@
 package org.sopt.global.config;
 
 import org.sopt.global.jwt.JwtAuthenticationFilter;
-import org.sopt.global.jwt.JwtProvider;
+import org.sopt.global.jwt.TokenVerifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -20,10 +21,21 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final JwtProvider jwtProvider;
+    private static final String[] AUTH_PUBLIC_URLS = {
+            "/api/v1/auth/signup",
+            "/api/v1/auth/login",
+            "/api/v1/auth/reissue",
+            "/api/v1/auth/logout"
+    };
 
-    public SecurityConfig(JwtProvider jwtProvider) {
-        this.jwtProvider = jwtProvider;
+    private static final String[] SWAGGER_URLS = {
+            "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**"
+    };
+
+    private final TokenVerifier tokenVerifier;
+
+    public SecurityConfig(TokenVerifier tokenVerifier) {
+        this.tokenVerifier = tokenVerifier;
     }
 
     @Bean
@@ -41,14 +53,16 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // URL별 접근 권한 설정
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/**").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, AUTH_PUBLIC_URLS).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/posts", "/api/v1/posts/**").permitAll()
+                        .requestMatchers(SWAGGER_URLS).permitAll()
+                        .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated())
                 // 인증 실패 시 401 응답
                 .exceptionHandling(e -> e
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 // JWT 인증 필터 추가
-                .addFilterBefore(new JwtAuthenticationFilter(jwtProvider),
+                .addFilterBefore(new JwtAuthenticationFilter(tokenVerifier),
                         UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

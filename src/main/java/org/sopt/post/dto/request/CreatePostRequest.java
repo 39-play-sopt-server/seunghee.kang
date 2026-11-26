@@ -11,9 +11,6 @@ public record CreatePostRequest(
         String content,
 
         @Schema(description = "카테고리 (INFO, NOTICE, FREE, QUESTION 중 하나)", example = "FREE")
-        PostCategory category,
-
-        @Schema(description = "작성자 회원 id", example = "1")
-        Long memberId
+        PostCategory category
 ) {
 }

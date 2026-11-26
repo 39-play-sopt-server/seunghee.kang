@@ -1,6 +1,5 @@
 package org.sopt.global.jwt;
 
-import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,10 +15,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final String BEARER_PREFIX = "Bearer ";
 
-    private final JwtProvider jwtProvider;
+    private final TokenVerifier tokenVerifier;
 
-    public JwtAuthenticationFilter(JwtProvider jwtProvider) {
-        this.jwtProvider = jwtProvider;
+    public JwtAuthenticationFilter(TokenVerifier tokenVerifier) {
+        this.tokenVerifier = tokenVerifier;
     }
 
     @Override
@@ -30,14 +29,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (token != null) {
             try {
-                Long memberId = jwtProvider.getMemberId(token);
+                TokenClaims claims = tokenVerifier.verify(token, TokenType.ACCESS);
 
-                // 인증 완료된 Authentication 생성 후 SecurityContext에 저장
                 UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(memberId, null, List.of());
+                        new UsernamePasswordAuthenticationToken(claims.memberId(), null, List.of());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-            } catch (JwtException | IllegalArgumentException e) {
-                // 유효하지 않은 토큰이면 인증 정보를 저장하지 않음
+            } catch (InvalidTokenException e) {
+                SecurityContextHolder.clearContext();
             }
         }
 

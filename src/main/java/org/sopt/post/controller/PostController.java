@@ -8,6 +8,7 @@ import org.sopt.post.dto.response.PostListResponse;
 import org.sopt.post.dto.response.PostResponse;
 import org.sopt.post.service.PostService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,13 +31,14 @@ public class PostController implements PostApi {
     @Override
     @PostMapping
     public ResponseEntity<ApiResponse<Long>> createPost(
+            @AuthenticationPrincipal Long memberId,
             @RequestBody(required = true) CreatePostRequest request
     ) {
         Long postId = postService.createPost(
                 request.title(),
                 request.content(),
                 request.category(),
-                request.memberId()
+                memberId
         );
         return ResponseEntity
                 .status(SuccessCode.POST_CREATED.getHttpStatus())
@@ -69,10 +71,11 @@ public class PostController implements PostApi {
     @Override
     @PutMapping(path = "/{postId}")
     public ResponseEntity<ApiResponse<Void>> updatePost(
+            @AuthenticationPrincipal Long memberId,
             @PathVariable(name = "postId") Long postId,
             @RequestBody(required = true) UpdatePostRequest request
     ) {
-        postService.updatePost(postId, request.title(), request.content());
+        postService.updatePost(postId, memberId, request.title(), request.content());
         return ResponseEntity
                 .status(SuccessCode.POST_UPDATED.getHttpStatus())
                 .body(ApiResponse.success(SuccessCode.POST_UPDATED));
@@ -81,9 +84,10 @@ public class PostController implements PostApi {
     @Override
     @DeleteMapping(path = "/{postId}")
     public ResponseEntity<ApiResponse<Void>> deletePost(
+            @AuthenticationPrincipal Long memberId,
             @PathVariable(name = "postId") Long postId
     ) {
-        postService.deletePost(postId);
+        postService.deletePost(postId, memberId);
         return ResponseEntity
                 .status(SuccessCode.POST_DELETED.getHttpStatus())
                 .body(ApiResponse.success(SuccessCode.POST_DELETED));
