@@ -1,7 +1,7 @@
 package org.sopt.global.config;
 
 import org.sopt.global.jwt.JwtAuthenticationFilter;
-import org.sopt.global.jwt.JwtProvider;
+import org.sopt.global.jwt.TokenVerifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -20,10 +20,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final JwtProvider jwtProvider;
+    private final TokenVerifier tokenVerifier;
 
-    public SecurityConfig(JwtProvider jwtProvider) {
-        this.jwtProvider = jwtProvider;
+    public SecurityConfig(TokenVerifier tokenVerifier) {
+        this.tokenVerifier = tokenVerifier;
     }
 
     @Bean
@@ -48,7 +48,7 @@ public class SecurityConfig {
                 .exceptionHandling(e -> e
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 // JWT 인증 필터 추가
-                .addFilterBefore(new JwtAuthenticationFilter(jwtProvider),
+                .addFilterBefore(new JwtAuthenticationFilter(tokenVerifier),
                         UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

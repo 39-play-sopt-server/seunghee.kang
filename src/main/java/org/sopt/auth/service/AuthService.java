@@ -1,7 +1,8 @@
 package org.sopt.auth.service;
 
 import org.sopt.auth.exception.LoginFailedException;
-import org.sopt.global.jwt.JwtProvider;
+import org.sopt.global.jwt.TokenGenerator;
+import org.sopt.global.jwt.TokenType;
 import org.sopt.global.response.ErrorCode;
 import org.sopt.member.domain.Member;
 import org.sopt.member.exception.DuplicateEmailException;
@@ -15,12 +16,12 @@ public class AuthService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtProvider jwtProvider;
+    private final TokenGenerator tokenGenerator;
 
-    public AuthService(MemberRepository memberRepository, PasswordEncoder passwordEncoder, JwtProvider jwtProvider) {
+    public AuthService(MemberRepository memberRepository, PasswordEncoder passwordEncoder, TokenGenerator tokenGenerator) {
         this.memberRepository = memberRepository;
         this.passwordEncoder = passwordEncoder;
-        this.jwtProvider = jwtProvider;
+        this.tokenGenerator = tokenGenerator;
     }
 
     @Transactional
@@ -42,6 +43,6 @@ public class AuthService {
             throw new LoginFailedException(ErrorCode.LOGIN_FAILED);
         }
 
-        return jwtProvider.createAccessToken(member.getId());
+        return tokenGenerator.generate(member.getId(), TokenType.ACCESS);
     }
 }
